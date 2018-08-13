@@ -1,0 +1,124 @@
+extends layout
+
+block content
+  div.row
+   #menu.col-xs-4.col-md-4
+    #forma.container
+     h1.display-4.mb-4 ВыбериТакси
+     form(method="POST")
+      #err.alert.alert-danger
+      div(class="input-group mb-3")
+       div(class="input-group-prepend")
+        span(class="input-group-text") От
+       input#start.form-control(type="text" placeholder='Адрес отправления' name='start')
+      div(class="input-group mb-3")
+       div(class="input-group-prepend")
+        span(class="input-group-text") До
+       input#end.form-control(type='text', placeholder='Адрес назначения' name='end')
+      input#csrf(type="hidden" name = "_csrf" value = csrfToken)
+      button#go.btn.btn-primary.mr-4(type="submit") Сравнить
+    #circle.marginLeft
+     h2 Loading...
+     #circle_1.circle
+     #circle_2.circle
+     #circle_3.circle
+     div.clearfix
+    #timedist.container
+   #map.col-xs-8.col-md-8
+  div.container
+   #data.col-xs-6
+   script.
+       $(function () {
+           $('form').submit(function (event) {
+                event.preventDefault();
+
+                let start = document.getElementById('start').value;
+                let end = document.getElementById('end').value;
+                let csrf = document.getElementById('csrf').value;
+                const geocoder = new google.maps.Geocoder();
+
+                if((start === "")&&(end === "")){
+                    riseErr('both');
+                }else if (start === ""){
+                    riseErr('nullstart');
+                }else if (end === "") {
+                    riseErr('nullend');
+                } else if (end === start) {
+                    riseErr('same');
+                }else{
+                    $('#err').html('').hide();
+                    $('#timedist').hide();
+                    $('#circle').show();
+                    $('#go').prop('disabled', true);
+                    let options = {
+                        "start": start,
+                        "end": end,
+                        "_csrf": csrf
+                    };
+
+                    geocodeAddress(geocoder);
+
+                    const formBody = Object.keys(options).map(function (key) {
+                        return encodeURIComponent(key) + '=' + encodeURIComponent(options[key])
+                    }).join('&');
+                    fetch('http://localhost:3000', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json, text/plain ,*/*',
+                            'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                        },
+                        body: formBody,
+                        mode: 'cors',
+                        credentials: 'include'
+                    })
+                    .then(function (res) {
+                        if (res.ok) {
+                            return res.json();
+                        }
+                        else {
+                            throw new Error();
+                        }
+                    })
+                    .then(function (data) {
+                        console.log(data);
+                        if(data) {
+                            $('#circle').hide();
+                            $('#timedist').show();
+                            let dat = document.getElementById('data');
+                            let ul = '<ul class="list-group md-3">' +
+                                '<li class = "list-group-item"> Route distanse: ' + data.dist[0] + ' </li>' +
+                                '<li class = "list-group-item">Route time: ' + data.time[0] + '</li>' +
+                                '</ul>';
+                            let table = '<table class = "table table-hover sortable">';
+                            table += '<thead class="thead-dark" >' +
+                                '<tr class="bg-dark text-white"><td scope="col">Name of a Taxi</td>' +
+                                '<td scope="col">Price of a Taxi</td></tr>' +
+                                '</thead>';
+                            for (let i = 0; i < data.name.length; i++) {
+                                table += '<tr>';
+
+                                table += '<td>';
+                                table += data.name[i];
+                                table += '</td>';
+
+                                table += '<td>';
+                                table += data.price[i];
+                                table += '</td>';
+
+                                table += '</tr>';
+                            }
+                            ;
+                            table += '</table>';
+                            dat.innerHTML = table;
+                            $('#timedist').html(ul);
+                            $('#go').prop('disabled', false);
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err.message);
+                    });
+
+                }
+           });
+       });
+   script(async, defer, src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIHU1rKJYh9Fg6EE6w_PEDYEH4ekMj2Rc&libraries=places&callback=activatePlacesSearch")

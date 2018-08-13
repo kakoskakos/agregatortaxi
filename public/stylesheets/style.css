@@ -1,0 +1,79 @@
+#menu{
+  //border:thin #0b080c solid;
+  margin-top:10px;
+  padding:0 10px 0 10px;
+}
+body{
+  background-color: #edeef0 !important;
+}
+#forma{
+  border:thin #0b080c solid;
+  padding: 15px;
+  background: #ffffff;
+}
+#map{
+  margin-top: 10px;
+  min-height: 65vh;
+  //margin: 16px;
+  padding:15px;
+  //left: 10px;
+}
+#timedist{
+  margin-top: 5px;
+  display: none;
+  padding: 25px;
+  border:thin #0b080c solid;
+  background: #ffffff;
+}
+.row{
+  width:100%;
+  //background: #edeef0;
+}
+table{
+  margin-top:10px;
+}
+#circle{
+  display: none;
+  padding: 25px;
+  margin-left: 30%;
+}
+h1{
+  background-color: #ffffff;
+}
+form{
+  background-color: #ffffff;
+}
+.circle{
+  background-color:#CCC;
+  float:left;
+  height:15px;
+  margin-left:8px;
+  width:15px;
+  -webkit-animation-name: bounce_circle;
+  -webkit-border-radius:10px;
+  -webkit-animation-duration: 1.5s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: reverse;
+  opacity:0.3;
+}
+#circle_1{
+  -webkit-animation-delay: .3s;
+}
+#circle_2{
+  -webkit-animation-delay: .7s;
+}
+#circle_3{
+  -webkit-animation-delay: .9s;
+}
+@-webkit-keyframes bounce_circle{
+  0%{opacity:0.3;}
+  50%{opacity:1;background-color:#111}
+  100%{opacity:0.3;}
+}
+
+.alert.alert-danger{
+  display:none;
+}
+#error{
+  margin-left: 2vw;
+}
